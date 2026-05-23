@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+select {
+  background-color: white;
+  color: #163b67;
+}
+
+option {
+  background: white;
+  color: #163b67;
+}
