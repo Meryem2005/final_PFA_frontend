@@ -4,57 +4,93 @@ import {
   Sun,
   Send,
   BarChart3,
-  MessageSquare,
 } from "lucide-react";
 
 function App() {
 
+  // =========================================
   // STATES
+  // =========================================
 
-  const [consommation, setConsommation] = useState(15);
-  const [surface, setSurface] = useState(30);
-  const [budget, setBudget] = useState(15000);
-  const [inclinaison, setInclinaison] = useState(45);
+  const [localisation, setLocalisation] =
+    useState("Casablanca");
 
-  const [results, setResults] = useState(null);
+  const [consommation, setConsommation] =
+    useState(15);
 
+  const [surface, setSurface] =
+    useState(30);
+
+  const [budget, setBudget] =
+    useState(50000);
+
+  const [orientation, setOrientation] =
+    useState("Sud");
+
+  const [installationType, setInstallationType] =
+    useState("Hybride");
+
+  const [results, setResults] =
+    useState(null);
+
+  const [question, setQuestion] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
+  // =========================================
   // CHAT
+  // =========================================
 
-  const [question, setQuestion] = useState("");
+  const [messages, setMessages] =
+    useState([
+      {
+        type: "bot",
+        text:
+          "Bonjour 👋 Je suis votre assistant intelligent pour le dimensionnement photovoltaïque.",
+      },
+    ]);
 
-  const [messages, setMessages] = useState([
-    {
-      type: "bot",
-      text:
-        "Bonjour 👋 Je peux vous aider à dimensionner votre installation solaire.",
-    },
-  ]);
-
-  // FIX PAGE BLANCHE
+  // =========================================
+  // AUTO SCROLL
+  // =========================================
 
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",
     });
+
   }, [messages]);
 
+  // =========================================
   // SEND QUESTION
+  // =========================================
 
-  const sendQuestion = async (text = question) => {
+  const sendQuestion = async (
+    text = question
+  ) => {
 
     if (!String(text).trim()) return;
 
-    const userMessage = {
-      type: "user",
-      text,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-
     const currentQuestion =
-      typeof text === "string" ? text : question;
+      typeof text === "string"
+        ? text
+        : question;
+
+    setMessages((prev) => [
+
+      ...prev,
+
+      {
+        type: "user",
+        text: currentQuestion,
+      },
+
+    ]);
 
     setQuestion("");
 
@@ -63,180 +99,271 @@ function App() {
       const response = await fetch(
         "http://127.0.0.1:8000/chat",
         {
+
           method: "POST",
 
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
 
           body: JSON.stringify({
             question: currentQuestion,
           }),
+
         }
       );
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
-      const cleanResponse = data.response
-        .replace(/\*\*/g, "")
-        .replace(/\*/g, "")
-        .replace(/"/g, "");
+      setMessages((prev) => [
 
-      const botMessage = {
-        type: "bot",
-        text: cleanResponse,
-      };
+        ...prev,
 
-      setMessages((prev) => [...prev, botMessage]);
+        {
+          type: "bot",
+          text:
+            data.response ||
+            "Aucune réponse.",
+        },
+
+      ]);
 
     } catch (error) {
 
       console.error(error);
 
       setMessages((prev) => [
+
         ...prev,
+
         {
           type: "bot",
-          text: "❌ Erreur connexion backend.",
+          text:
+            "❌ Erreur connexion backend.",
         },
-      ]);
 
+      ]);
     }
   };
 
+  // =========================================
   // CALCUL SOLAIRE
+  // =========================================
 
   const calculateSolar = async () => {
 
-    const userMessage = {
-      type: "user",
-      text:
-        `Calcule le dimensionnement pour ma maison à Casablanca, Maroc — ` +
-        `${consommation} kWh/j ${surface} m² budget ${budget} €`,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-
     try {
+
+      setLoading(true);
+
+      const payload = {
+
+        city: localisation,
+
+        daily_consumption_kwh:
+          Number(consommation),
+
+        available_area_m2:
+          Number(surface),
+
+        budget:
+          Number(budget),
+
+        orientation,
+
+        installation_type:
+          installationType,
+
+        autonomy_days: 1,
+
+        shade_factor: 1,
+
+        roof_type: "terrasse",
+
+        distance_to_load_m: 10,
+      };
 
       const response = await fetch(
         "http://127.0.0.1:8000/calculate",
         {
+
           method: "POST",
 
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
 
-          body: JSON.stringify({
-            consommation,
-            surface,
-            budget,
-            inclinaison,
-            localisation: "Casablanca",
-            orientation: "Sud",
-            installation_type: "Avec batterie",
-          }),
+          body: JSON.stringify(payload),
         }
       );
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
       setResults(data);
 
-      const botMessage = {
-        type: "bot",
-        text:
-          `📊 Calcul terminé — Voici une synthèse pour Casablanca, Maroc :\n\n` +
-          `☀️ Ton installation optimale : ${data.panneaux} panneaux (${data.power})\n\n` +
-          `🔋 Batterie : ${data.battery}\n\n` +
-          `⚡ Onduleur : ${data.inverter}\n\n` +
-          `💰 Budget estimé : ${data.budget_estime}\n\n` +
-          `☀️ Couverture de tes besoins : ${data.coverage}\n\n` +
-          `📈 Retour sur investissement : ${data.roi}\n\n` +
-          `⚡ Production estimée : ${data.production}\n\n` +
-          `Tu as des questions sur ces résultats ?`,
-      };
+      setMessages((prev) => [
 
-      setMessages((prev) => [...prev, botMessage]);
+        ...prev,
+
+        {
+          type: "bot",
+
+          text:
+
+` 📊 Calcul terminé — Voici une synthèse pour  ${data.location || localisation}
+
+━━━━━━━━━━━━━━━━━━
+ PANNEAUX SOLAIRES
+━━━━━━━━━━━━━━━━━━
+• Nombre : ${data?.panels?.panel_count || 0}
+• Type : ${data?.panels?.panel_model || "-"}
+• Puissance : ${data?.panels?.total_power_kwp || 0} kWp
+• Production : ${data?.panels?.estimated_daily_production_kwh || 0} kWh/j
+
+━━━━━━━━━━━━━━━━━━
+ BATTERIES
+━━━━━━━━━━━━━━━━━━
+• Nombre : ${data?.battery?.battery_count || 0}
+• Type : ${data?.battery?.battery_type || "-"}
+• Capacité : ${data?.battery?.required_capacity_kwh || 0} kWh
+
+━━━━━━━━━━━━━━━━━━
+⚡ ONDULEUR
+━━━━━━━━━━━━━━━━━━
+• Modèle : ${data?.inverter?.inverter_model || "-"}
+• Puissance : ${data?.inverter?.recommended_power_kw || 0} kW
+
+━━━━━━━━━━━━━━━━━━
+ ROI
+━━━━━━━━━━━━━━━━━━
+• Retour sur investissement :
+${data?.roi?.roi_years || 0} ans
+
+${data?.recommendations?.length
+  ? `
+━━━━━━━━━━━━━━━━━━
+ RECOMMANDATIONS
+━━━━━━━━━━━━━━━━━━
+${data.recommendations.map(r => `• ${r}`).join("\n")}
+`
+  : ""
+}
+
+━━━━━━━━━━━━━━━━━━
+ INSTALLATION
+━━━━━━━━━━━━━━━━━━
+• Inclinaison : ${data?.installation?.tilt_angle ||30}°
+• Orientation : ${data?.installation?.orientation || orientation}
+
+━━━━━━━━━━━━━━━━━━
+ BUDGET FINAL
+━━━━━━━━━━━━━━━━━━
+${data?.cost?.total_cost || 0} DH`,
+
+          showGeneratePdf: true,
+        }
+
+      ]);
 
     } catch (error) {
 
       console.error(error);
 
       setMessages((prev) => [
+
         ...prev,
+
         {
           type: "bot",
-          text: "❌ Erreur backend.",
+          text:
+            "❌ Erreur backend.",
         },
+
       ]);
 
+    } finally {
+
+      setLoading(false);
     }
   };
 
-  // START DISCUSSION
-
-  const startDiscussion = async () => {
-
-    const prompt =
-      `Bonjour ! Je souhaite installer des panneaux solaires.\n\n` +
-      `Localisation : Casablanca\n` +
-      `Consommation : ${consommation} kWh/j\n` +
-      `Surface : ${surface} m²\n` +
-      `Budget : ${budget} €\n` +
-      `Inclinaison : ${inclinaison}°\n\n` +
-      `Peux-tu analyser ma situation ?`;
-
-    sendQuestion(prompt);
-
-  };
-
+  
+  // =========================================
   // PDF
+  // =========================================
 
   const downloadPdf = async () => {
 
     try {
 
+      const payload = {
+
+        city: localisation,
+
+        daily_consumption_kwh:
+          Number(consommation),
+
+        available_area_m2:
+          Number(surface),
+
+        budget:
+          Number(budget),
+
+        orientation,
+
+        installation_type:
+          installationType,
+
+        autonomy_days: 1,
+
+        shade_factor: 1,
+
+        roof_type: "terrasse",
+
+        distance_to_load_m: 10,
+      };
+
       const response = await fetch(
         "http://127.0.0.1:8000/generate-pdf",
         {
+
           method: "POST",
 
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
 
-          body: JSON.stringify({
-            consommation,
-            surface,
-
-            panneaux: results?.panneaux || "N/A",
-            battery: results?.battery || "N/A",
-            inverter: results?.inverter || "N/A",
-            production: results?.production || "N/A",
-            roi: results?.roi || "N/A",
-            budget_estime:
-              results?.budget_estime || "N/A",
-          }),
+          body: JSON.stringify(payload),
         }
       );
 
-      const blob = await response.blob();
-
-      const fileURL =
-        window.URL.createObjectURL(blob);
-
-      window.open(fileURL);
-
+      const data =
+  await response.json();
+setMessages((prev) => [
+  ...prev,
+  {
+    type: "bot",
+    
+    pdf: true,
+    pdfUrl: "http://127.0.0.1:8000" + data.pdf_url,
+  },
+]);
     } catch (error) {
 
       console.error(error);
 
       alert("Erreur PDF");
-
     }
   };
+
+  // =========================================
+  // UI
+  // =========================================
 
   return (
 
@@ -244,285 +371,418 @@ function App() {
 
       {/* HEADER */}
 
-      <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-[#163b67] flex items-center justify-between px-8 border-b border-[#0e2744]">
+      <header className="fixed top-0 left-0 right-0 z-50 h-20 bg-[#163b67] flex items-center justify-between px-3 border-b border-[#0e2744]">
 
-        <div className="flex items-center gap-3">
+  {/* Logo */}
+  <div className="flex items-center gap-4">
+    <div className="w-10 h-10 rounded bg-[#f5a623] flex items-center justify-center">
+      <Sun size={20} className="text-white" />
+    </div>
 
-          <div className="w-8 h-8 rounded bg-[#f5a623] flex items-center justify-center">
-            <Sun size={18} className="text-white" />
-          </div>
+    <h1 className="text-3xl font-black text-white">
+      Solar
+      <span className="text-[#f5a623]"> AI</span>
+    </h1>
+  </div>
 
-          <h1 className="text-2xl font-bold text-white">
-            Solar <span className="text-[#f5a623]">AI</span>
-          </h1>
+  {/* Bouton à droite */}
+  <button
+    className="
+      px-5 py-3
+      rounded-full
+      border border-[#f5a623]
+      text-[#f5a623]
+      font-semibold
+      hover:bg-[#f5a623]
+      hover:text-white
+      transition-all
+    "
+  >
+    Agent Dimensionnement PV
+  </button>
 
-        </div>
+</header>
 
-        <button className="bg-[#f5a623] text-white px-5 py-2 rounded-full text-sm font-semibold">
-          Agent Dimensionnement PV
-        </button>
 
-      </header>
 
-      {/* LAYOUT */}
 
-      <div className="pt-16 flex h-screen">
+      {/* MAIN */}
 
-        {/* LEFT PANEL */}
+      <div className="pt-20 flex h-screen">
 
-        <aside className="w-[280px] bg-white border-r border-gray-200 p-6 overflow-y-auto">
+        {/* LEFT */}
 
-          <h2 className="text-gray-700 font-bold tracking-[4px] text-sm mb-8">
+        <aside className="w-[340px] bg-white border-r border-gray-200 p-3 overflow-y-auto">
+
+          <h2 className="text-[#163b67] font-bold tracking-[4px] text-sm mb-8">
+
             PARAMÈTRES
+
           </h2>
 
-          {/* LOCALISATION */}
+          <div className="space-y-5">
 
-          <div className="mb-7">
+            <div>
 
-            <label className="block text-xs text-gray-500 mb-2 font-bold tracking-[2px]">
-              LOCALISATION
-            </label>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">
 
-            <select className="w-full border border-gray-300 rounded-2xl px-4 py-4 bg-white text-[#163b67] font-medium outline-none focus:ring-2 focus:ring-[#163b67]/20">
-              <option>Casablanca, Maroc</option>
-              <option>Marrakech, Maroc</option>
-              <option>Paris, France</option>
-              <option>Marseille, France</option>
-              <option>Dakar, Sénégal</option>
-              <option>Tunis, Tunisie</option>
-              <option>Alger, Algérie</option>
-              <option>Madrid, Espagne</option>
-              <option>Dubaï, Émirats</option>
-              <option>Autre (préciser dans le chat)</option>
-            </select>
+                 Localisation
 
-          </div>
+              </label>
 
-          {/* CONSOMMATION */}
-
-          <div className="mb-7">
-
-            <div className="flex justify-between mb-2">
-
-              <span className="text-xs text-gray-500 font-bold tracking-[2px]">
-                CONSOMMATION JOURNALIÈRE
-              </span>
-
-              <span className="font-bold text-[#163b67]">
-                {consommation} kWh
-              </span>
+              <input
+                type="text"
+                value={localisation}
+                onChange={(e) =>
+                  setLocalisation(e.target.value)
+                }
+                placeholder="Casablanca"
+                className="w-full border rounded-2xl px-4 py-4"
+              />
 
             </div>
 
-            <input
-              type="range"
-              min="1"
-              max="50"
-              value={consommation}
-              onChange={(e) =>
-                setConsommation(e.target.value)
-              }
-              className="w-full accent-[#f5a623]"
-            />
+            <div>
 
-            <p className="text-[10px] text-gray-400 mt-2">
-              Foyer typique : 10–20 kWh/j
-            </p>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">
 
-          </div>
+                 Consommation journalière (kWh)
 
-          {/* SURFACE */}
+              </label>
 
-          <div className="mb-7">
-
-            <div className="flex justify-between mb-2">
-
-              <span className="text-xs text-gray-500 font-bold tracking-[2px]">
-                SURFACE DE TOIT DISPONIBLE
-              </span>
-
-              <span className="font-bold text-[#163b67]">
-                {surface} m²
-              </span>
+              <input
+                type="number"
+                value={consommation}
+                onChange={(e) =>
+                  setConsommation(e.target.value)
+                }
+                className="w-full border rounded-2xl px-4 py-4"
+              />
 
             </div>
 
-            <input
-              type="range"
-              min="10"
-              max="200"
-              value={surface}
-              onChange={(e) =>
-                setSurface(e.target.value)
-              }
-              className="w-full accent-[#f5a623]"
-            />
+            <div>
 
-          </div>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">
 
-          {/* BUDGET */}
+                 Surface disponible (m²)
 
-          <div className="mb-7 border-b border-gray-300 pb-6">
+              </label>
 
-            <div className="flex justify-between mb-2">
-
-              <span className="text-xs text-gray-500 font-bold tracking-[2px]">
-                BUDGET DISPONIBLE
-              </span>
-
-              <span className="font-bold text-[#163b67]">
-                {budget} €
-              </span>
+              <input
+                type="number"
+                value={surface}
+                onChange={(e) =>
+                  setSurface(e.target.value)
+                }
+                className="w-full border rounded-2xl px-4 py-4"
+              />
 
             </div>
 
-            <input
-              type="range"
-              min="1000"
-              max="50000"
-              step="500"
-              value={budget}
-              onChange={(e) =>
-                setBudget(e.target.value)
-              }
-              className="w-full accent-[#f5a623]"
-            />
+            <div>
 
-          </div>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">
 
-          {/* TYPE */}
+                 Budget disponible (DH)
 
-          <div className="mb-7">
+              </label>
 
-            <label className="block text-xs text-gray-500 mb-2 font-bold tracking-[2px]">
-              TYPE D'INSTALLATION
-            </label>
-
-            <select className="w-full border border-gray-300 rounded-2xl px-4 py-4 bg-white text-[#163b67] font-medium outline-none focus:ring-2 focus:ring-[#163b67]/20">
-              <option>Avec batterie (autonome)</option>
-              <option>Sans batterie (réseau)</option>
-              <option>Hybride</option>
-            </select>
-
-          </div>
-
-          {/* ORIENTATION */}
-
-          <div className="mb-7">
-
-            <label className="block text-xs text-gray-500 mb-2 font-bold tracking-[2px]">
-              ORIENTATION DU TOIT
-            </label>
-
-            <select className="w-full border border-gray-300 rounded-2xl px-4 py-4 bg-white text-[#163b67] font-medium outline-none focus:ring-2 focus:ring-[#163b67]/20">
-              <option>Sud (optimal)</option>
-              <option>Sud-Est</option>
-              <option>Sud-Ouest</option>
-              <option>Est / Ouest</option>
-            </select>
-
-          </div>
-
-          {/* INCLINAISON */}
-
-          <div className="mb-8 border-b border-gray-300 pb-6">
-
-            <div className="flex justify-between mb-2">
-
-              <span className="text-xs text-gray-500 font-bold tracking-[2px]">
-                INCLINAISON
-              </span>
-
-              <span className="font-bold text-[#163b67]">
-                {inclinaison}°
-              </span>
+              <input
+                type="number"
+                value={budget}
+                onChange={(e) =>
+                  setBudget(e.target.value)
+                }
+                className="w-full border rounded-2xl px-4 py-4"
+              />
 
             </div>
 
-            <input
-              type="range"
-              min="0"
-              max="60"
-              value={inclinaison}
-              onChange={(e) =>
-                setInclinaison(e.target.value)
+            <div>
+
+              <label className="block text-sm font-semibold mb-2 text-gray-700">
+
+                 Orientation
+
+              </label>
+
+              <select
+                value={orientation}
+                onChange={(e) =>
+                  setOrientation(e.target.value)
+                }
+                className="w-full border rounded-2xl px-4 py-4"
+              >
+
+                <option>Sud</option>
+                <option>Nord</option>
+                <option>Est</option>
+                <option>Ouest</option>
+
+              </select>
+
+            </div>
+
+            <div>
+
+              <label className="block text-sm font-semibold mb-2 text-gray-700">
+
+                Type d’installation
+
+              </label>
+
+              <select
+                value={installationType}
+                onChange={(e) =>
+                  setInstallationType(
+                    e.target.value
+                  )
+                }
+                className="w-full border rounded-2xl px-4 py-4"
+              >
+
+                <option value="hybride">Hybride</option>
+                <option value="on-grid">On-Grid</option>
+                <option value="off-grid">Off-Grid</option>
+
+              </select>
+
+            </div>
+
+            <button
+              onClick={calculateSolar}
+              disabled={loading}
+              className="
+                w-full
+                bg-[#f5a623]
+                hover:bg-[#e89914]
+                text-white
+                py-4
+                rounded-2xl
+                font-bold
+                text-lg
+              "
+            >
+
+              {
+                loading
+                  ? "Calcul..."
+                  : "⚡ Calculer maintenant"
               }
-              className="w-full accent-[#f5a623]"
-            />
+
+            </button>
 
           </div>
-
-          {/* BUTTONS */}
-
-          <button
-            onClick={calculateSolar}
-            className="w-full bg-[#f5a623] hover:bg-[#e89914] transition text-white py-4 rounded-2xl font-bold mb-4 shadow"
-          >
-            ⚡ Calculer maintenant
-          </button>
-
-          <button
-            onClick={startDiscussion}
-            className="w-full bg-[#163b67] hover:bg-[#102d50] transition text-white py-4 rounded-2xl font-bold"
-          >
-            💬 Démarrer le dialogue
-          </button>
 
         </aside>
 
         {/* CENTER */}
 
-        <main className="flex-1 flex flex-col overflow-hidden">
+       <main className="flex-1 flex flex-col h-[calc(100vh-80px)]">
 
-          <div className="flex-1 overflow-y-auto px-10 py-12 pb-40">
+          {messages.length === 1 ? (
 
-            <div className="max-w-4xl mx-auto text-center">
+            <div className="flex-1 overflow-y-auto flex justify-center px-10 pt-10 pb-32">
 
-              <div className="w-24 h-24 rounded-full border-2 border-dashed border-[#f5c97d] flex items-center justify-center mx-auto mb-8">
+              <div className="text-center max-w-7xl">
 
-                <Sun size={34} className="text-[#163b67]" />
-
-              </div>
-
-              <h1 className="text-5xl font-bold text-[#163b67] mb-6">
-                Agent Solaire IA
-              </h1>
-
-              <p className="text-gray-600 text-lg leading-8">
-                Je suis votre assistant intelligent pour dimensionner votre installation photovoltaïque.
-              </p>
-
-              {/* CHAT */}
-
-              <div className="mt-20 space-y-6 text-left">
-
-                {messages.map((msg, index) => (
+                <div className="relative mx-auto w-32 h-32 mb-10">
 
                   <div
-                    key={index}
-                    className={`p-6 rounded-3xl shadow max-w-2xl whitespace-pre-line ${
-                      msg.type === "user"
-                        ? "bg-[#163b67] text-white ml-auto"
-                        : "bg-white text-black"
-                    }`}
+                    className="
+                      absolute inset-0
+                      rounded-full
+                      border-2 border-dashed
+                      border-[#f0d7a2]
+                    "
+                  />
+
+                  <div
+                    className="
+                      w-full h-full
+                      rounded-full
+                      bg-[#f5e7c5]
+                      flex items-center justify-center
+                    "
                   >
-                    {msg.text}
+
+                    <Sun
+                      size={42}
+                      className="text-[#163b67]"
+                    />
+
                   </div>
 
-                ))}
+                </div>
 
-                <div ref={messagesEndRef} />
+                <h1
+                  className="
+                    text-2xl
+                    font-black
+                    text-[#163b67]
+                    mb-8
+                  "
+                >
+
+                  Agent Solaire IA
+
+                </h1>
+
+                <p
+                  className="
+                    text-2xl
+                    text-[#6d6258]
+                    leading-[40px]
+                    max-w-2xl
+                    mx-auto
+                  "
+                >
+
+                  Je suis votre assistant intelligent
+                  pour dimensionner votre installation
+
+                  photovoltaïque. Posez-moi vos
+                  questions ou cliquez sur
+
+                  "Calculer maintenant".
+
+                </p>
+
+                <div
+                  className="
+                    mt-14
+                    flex
+                    flex-wrap
+                    justify-center
+                    gap-5
+                  "
+                >
+
+                  {
+                    [
+  "Combien de panneaux pour ma maison ?",
+  "Quelle batterie me recommandes-tu ?",
+  "Quel est le retour sur investissement ?",
+  "Quelle inclinaison est idéale ?",
+  "Guide complet d'installation",
+  "Explique-moi le dimensionnement"].map((q, index) => (
+
+                    <button
+                      key={index}
+                      onClick={() =>
+                        sendQuestion(q)
+                      }
+                      className="
+                        px-5 py-2
+                       
+                        rounded-full
+                        bg-white
+                        border border-[#ddd5c7]
+                        text-[#6a6157]
+                        hover:bg-[#163b67]
+                        hover:text-white
+                        transition-all
+                        duration-300
+                        shadow-sm
+                        text-lg
+                        font-medium
+                      "
+                    >
+
+                      {q}
+
+                    </button>
+
+                  ))}
+
+                </div>
 
               </div>
 
             </div>
 
-          </div>
+          ) : (
+
+            <div className="flex-1 overflow-y-scroll px-10 py-10 pb-40">
+
+              <div className="max-w-4xl mx-auto">
+
+                <div className="space-y-6 text-left">
+
+                  {messages.map(
+                    (msg, index) => (
+
+                      <div
+                        key={index}
+                        className={`p-6 rounded-3xl shadow whitespace-pre-line max-w-3xl ${
+                          msg.type === "user"
+                            ? "bg-[#163b67] text-white ml-auto"
+                            : "bg-white text-black"
+                        }`}
+                      >
+
+                        <div>{msg.text}</div>
+
+                        {msg.pdf && (
+  <div className="mt-5">
+    <button
+      onClick={() => window.open(msg.pdfUrl, "_blank")}
+      className="
+        text-blue-600
+        hover:text-blue-800
+        hover:underline
+        font-semibold
+      "
+    >
+      Ouvrir le rapport PDF
+    </button>
+  </div>
+)}
+
+
+                        {msg.showGeneratePdf && (
+
+                          <div className="mt-5">
+
+                            <button
+                              onClick={downloadPdf}
+                              className="
+                                text-blue-600
+                                hover:text-blue-800
+                                hover:underline
+                                font-semibold
+                              "
+                            >
+
+                              Générer le rapport PDF détaillé
+
+                            </button>
+
+                          </div>
+
+                        )}
+
+                      
+
+                      </div>
+
+                    )
+                  )}
+
+                  <div ref={messagesEndRef} />
+
+                </div>
+
+              </div>
+
+            </div>
+
+          )}
 
           {/* INPUT */}
 
-          <div className="border-t border-gray-300 bg-[#ece8e1] p-6">
+          <div className="border-t border-gray-300 bg-[#ece8e1] p-8">
 
             <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border flex items-center px-6 py-4">
 
@@ -533,19 +793,33 @@ function App() {
                   setQuestion(e.target.value)
                 }
                 onKeyDown={(e) => {
+
                   if (e.key === "Enter") {
+
                     sendQuestion();
+
                   }
                 }}
-                placeholder="Posez votre question sur le solaire..."
+                placeholder="Posez votre question..."
                 className="flex-1 outline-none text-gray-700 text-lg"
               />
 
               <button
-                onClick={() => sendQuestion()}
-                className="bg-[#f5a623] hover:bg-[#e89914] transition p-4 rounded-2xl text-white"
+                onClick={() =>
+                  sendQuestion()
+                }
+                className="
+                  bg-[#f5a623]
+                  hover:bg-[#e89914]
+                  transition
+                  p-4
+                  rounded-2xl
+                  text-white
+                "
               >
+
                 <Send size={22} />
+
               </button>
 
             </div>
@@ -554,12 +828,15 @@ function App() {
 
         </main>
 
-        {/* RIGHT PANEL */}
+        {/* RIGHT */}
 
-        <aside className="w-[280px] bg-white border-l border-gray-200 p-6 overflow-y-auto">
+        <aside className="w-[300px] bg-white border-l border-gray-200 overflow-y-auto">
+          
 
-          <h2 className="text-gray-700 font-bold tracking-[4px] text-sm mb-8">
-            RÉSULTATS
+          <h2 className="text-gray-700 font-bold tracking-[6px] text-sm mt-4 p-3 mb-8">
+
+               RÉSULTATS
+
           </h2>
 
           {!results ? (
@@ -575,8 +852,11 @@ function App() {
 
               </div>
 
-              <p className="text-gray-500">
-                Les résultats apparaîtront ici.
+              <p className="text-gray-500 text-lg">
+
+                Les résultats du dimensionnement
+                apparaîtront ici après le calcul.
+
               </p>
 
             </div>
@@ -585,207 +865,86 @@ function App() {
 
             <div className="space-y-5">
 
-              {/* PDF */}
+  <div className="bg-[#f7f4ef] border rounded-2xl p-5">
+    <h3 className="font-bold mb-3">
+      ☀️ PANNEAUX
+    </h3>
 
-              <div className="bg-[#f7f4ef] border border-[#d7d2ca] rounded-2xl p-5 shadow-sm">
+    <p>
+      {results?.panels?.panel_count}
+      {" × "}
+      {results?.panels?.panel_model}
+    </p>
+  </div>
 
-                <h3 className="text-xs font-bold tracking-[3px] text-gray-600 mb-4">
-                  📄 RAPPORT PDF
-                </h3>
+  <div className="bg-[#f7f4ef] border rounded-2xl p-5">
+    <h3 className="font-bold mb-3">
+      🔋 BATTERIES
+    </h3>
 
-                <button
-                  onClick={downloadPdf}
-                  className="w-full bg-[#163b67] text-white py-4 rounded-2xl font-bold"
-                >
-                  Télécharger le devis PDF
-                </button>
+    <p>
+      {results?.battery?.battery_count}
+      {" × "}
+      {results?.battery?.battery_type}
+    </p>
+  </div>
 
-              </div>
+  <div className="bg-[#f7f4ef] border rounded-2xl p-5">
+    <h3 className="font-bold mb-3">
+      💰 BUDGET FINAL
+    </h3>
 
-              {/* PANNEAUX */}
+    <p className="text-2xl font-bold text-[#163b67]">
+      {results?.cost?.total_cost} DH
+    </p>
+  </div>
 
-              <div className="bg-[#f7f4ef] border border-[#d7d2ca] rounded-2xl p-5 shadow-sm">
+  {results?.installation && (
+    <div className="bg-[#f7f4ef] border rounded-2xl p-5">
+      <h3 className="font-bold mb-3">
+        📐 INSTALLATION
+      </h3>
 
-                <h3 className="text-xs font-bold tracking-[3px] mb-5 text-gray-700">
-                  ☀️ PANNEAUX SOLAIRES
-                </h3>
+      <p>
+        Inclinaison : {results.installation.tilt_angle}°
+      </p>
 
-                <div className="text-center">
+      <p>
+        Orientation : {results.installation.orientation}
+      </p>
+    </div>
+  )}
 
-                  <h1 className="text-5xl font-bold text-[#163b67]">
-                    {results.panneaux}
-                  </h1>
+  {results?.roi && (
+    <div className="bg-[#f7f4ef] border rounded-2xl p-5">
+      <h3 className="font-bold mb-3">
+        📈 ROI
+      </h3>
 
-                  <p className="mt-2 text-gray-600 text-sm">
-                    panneaux × 400 Wc ={" "}
-                    <span className="font-bold text-[#163b67]">
-                      {results.power}
-                    </span>
-                  </p>
+      <p className="text-xl font-bold text-green-700">
+        {results.roi.roi_years} ans
+      </p>
+    </div>
+  )}
 
-                </div>
+  {results?.recommendations?.length > 0 && (
+    <div className="bg-[#f7f4ef] border rounded-2xl p-5">
+      <h3 className="font-bold mb-3">
+        🤖 Recommandations IA
+      </h3>
 
-                <div className="mt-6 space-y-3 text-sm">
+      <ul className="space-y-2">
+        {results.recommendations.map((item, i) => (
+          <li key={i}>
+            • {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
 
-                  <div className="flex justify-between border-b pb-2">
-                    <span>Irradiation locale</span>
-                    <span className="font-bold text-[#163b67]">
-                      5.2 kWh/m²/j
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between border-b pb-2">
-                    <span>Production journalière</span>
-                    <span className="font-bold text-[#163b67]">
-                      {results.production}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span>Couverture besoins</span>
-                    <span className="font-bold text-[#163b67]">
-                      {results.coverage}
-                    </span>
-                  </div>
-
-                </div>
-
-                <div className="w-full h-3 bg-[#e2d8c3] rounded-full mt-5">
-                  <div className="h-3 bg-[#e8a321] rounded-full w-full"></div>
-                </div>
-
-              </div>
-
-              {/* BATTERIE */}
-
-              <div className="bg-[#f7f4ef] border border-[#d7d2ca] rounded-2xl p-5 shadow-sm">
-
-                <h3 className="text-xs font-bold tracking-[3px] mb-5 text-gray-700">
-                  🔋 STOCKAGE BATTERIE
-                </h3>
-
-                <div className="space-y-4 text-sm">
-
-                  <div className="flex justify-between border-b pb-2">
-                    <span>Capacité</span>
-                    <span className="font-bold text-[#163b67]">
-                      {results.battery}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span>Ampérage (48V)</span>
-                    <span className="font-bold text-[#163b67]">
-                      480 Ah
-                    </span>
-                  </div>
-
-                </div>
-
-              </div>
-
-              {/* ONDULEUR */}
-
-              <div className="bg-[#f7f4ef] border border-[#d7d2ca] rounded-2xl p-5 shadow-sm">
-
-                <h3 className="text-xs font-bold tracking-[3px] mb-5 text-gray-700">
-                  ⚡ ONDULEUR
-                </h3>
-
-                <div className="flex justify-between text-sm">
-                  <span>Puissance requise</span>
-                  <span className="font-bold text-[#163b67]">
-                    {results.inverter}
-                  </span>
-                </div>
-
-              </div>
-
-              {/* BUDGET */}
-
-              <div className="bg-[#f7f4ef] border border-[#d7d2ca] rounded-2xl p-5 shadow-sm">
-
-                <h3 className="text-xs font-bold tracking-[3px] mb-5 text-gray-700">
-                  💰 ESTIMATION BUDGET
-                </h3>
-
-                <div className="space-y-3 text-sm">
-
-                  <div className="flex justify-between border-b pb-2">
-                    <span>Panneaux</span>
-                    <span className="font-bold text-[#163b67]">
-                      2800 €
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between border-b pb-2">
-                    <span>Onduleur</span>
-                    <span className="font-bold text-[#163b67]">
-                      1920 €
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between border-b pb-2">
-                    <span>Batterie</span>
-                    <span className="font-bold text-[#163b67]">
-                      8050 €
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between border-b pb-2">
-                    <span>Installation</span>
-                    <span className="font-bold text-[#163b67]">
-                      3193 €
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between text-lg pt-2">
-                    <span className="font-bold">TOTAL</span>
-                    <span className="font-bold text-[#163b67]">
-                      {results.budget_estime}
-                    </span>
-                  </div>
-
-                </div>
-
-                <div className="mt-5 text-green-700 text-xs font-semibold">
-                  🌿 2393 kg CO₂ économisés/an
-                </div>
-
-              </div>
-
-              {/* ROI */}
-
-              <div className="bg-[#f7f4ef] border border-[#d7d2ca] rounded-2xl p-5 shadow-sm">
-
-                <h3 className="text-xs font-bold tracking-[3px] mb-5 text-gray-700">
-                  📈 RENTABILITÉ
-                </h3>
-
-                <div className="space-y-3 text-sm">
-
-                  <div className="flex justify-between border-b pb-2">
-                    <span>Production annuelle</span>
-                    <span className="font-bold text-[#163b67]">
-                      5982 kWh
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span>Retour sur investissement</span>
-                    <span className="font-bold text-[#163b67]">
-                      {results.roi}
-                    </span>
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          )}
-
+         </div>
+)}
         </aside>
 
       </div>
