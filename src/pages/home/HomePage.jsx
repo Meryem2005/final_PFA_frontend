@@ -143,7 +143,7 @@ export default function HomePage() {
               <div className="home-carousel-track-infinite">
                 {carouselImages.map((n, i) => (
                   <div key={i} className="home-carousel-item-infinite">
-                    <img src={`/images/solar${n}.png`} alt={`solar ${n}`} />
+                    <img src={`/images/solar${n}.jpg`} alt={`solar ${n}`} />
                   </div>
                 ))}
               </div>

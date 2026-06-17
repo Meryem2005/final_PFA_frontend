@@ -1,0 +1,314 @@
+/* Variables basées sur tes couleurs */
+:root {
+  --bg-beige: #e9e6df;
+  --blue-dark: #163b67;
+  --yellow-accent: #f5a623;
+  --yellow-hover: #e49b18;
+  --text-brown: #6d6258;
+  --white: #ffffff;
+}
+
+/* ================= HEADER (Identique à la Home) ================= */
+.confirm-header {
+  height: 80px;
+  background: var(--blue-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 60px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(22, 59, 103, 0.15);
+}
+
+.home-logo { display: flex; align-items: center; gap: 14px; cursor: pointer; }
+
+.home-logo-icon {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, var(--yellow-accent), #ffc658);
+  border-radius: 14px; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 10px rgba(245, 166, 35, 0.4);
+}
+
+.home-logo h1 { color: white; font-size: 26px; font-weight: 900; letter-spacing: -0.5px; margin: 0; }
+.home-logo-accent { color: var(--yellow-accent); }
+.home-actions { display: flex; gap: 16px; }
+
+.home-login-btn {
+  padding: 10px 24px; font-size: 14px; border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.2); background: transparent;
+  color: white; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
+}
+.home-login-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
+
+.home-register-btn {
+  padding: 10px 24px; font-size: 14px; border-radius: 12px; border: none;
+  background: var(--yellow-accent); color: white; font-weight: 700;
+  cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(245, 166, 35, 0.3);
+}
+.home-register-btn:hover { background: var(--yellow-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245, 166, 35, 0.5); }
+
+/* ================= CONTENU DE LA PAGE ================= */
+.confirm-page-container {
+  min-height: calc(100vh - 80px);
+  background: #f8fafc;
+  padding: 40px 20px;
+}
+
+.confirm-form-wrapper {
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+/* INTRO */
+.intro-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.intro-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--blue-dark);
+  margin-bottom: 8px;
+}
+
+.intro-text {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* SECTIONS */
+.section-card {
+  background: #fff7ed;
+  border: 2px solid var(--yellow-accent);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  color: var(--yellow-accent);
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.field-label {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 15px;
+  font-weight: 600;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  color: #374151;
+  background: white;
+  box-sizing: border-box;
+  transition: border 0.2s ease;
+  font-family: inherit;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--blue-dark);
+}
+
+.input-field.orange {
+  border: 2px solid var(--yellow-accent);
+}
+
+/* ERROR BOX */
+.error-box {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+/* BOUTONS FORMULAIRE */
+.buttons-container {
+  display: flex;
+  gap: 16px;
+}
+
+.btn-back {
+  flex: 1;
+  padding: 14px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #374151;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-back:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.btn-confirm {
+  flex: 2;
+  padding: 14px;
+  background: var(--blue-dark);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-confirm:hover {
+  background: #1e4d82;
+}
+
+.btn-confirm:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* ECRANS DE CHARGEMENT ET ERREUR */
+.loading-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--blue-dark);
+  font-weight: 600;
+}
+
+.error-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.error-screen h2 {
+  margin-top: 16px;
+  color: var(--blue-dark);
+}
+
+.error-screen p {
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+.error-screen button {
+  padding: 10px 24px;
+  background: var(--blue-dark);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+/* ========================
+   DARK MODE (Confirm Page)
+======================== */
+body.dark-mode .confirm-page-container {
+  background: #111827 !important;
+}
+
+body.dark-mode .confirm-header {
+  background: #0f2a4d !important;
+}
+
+body.dark-mode .intro-card {
+  background: #1f2937 !important;
+  color: white !important;
+  border-color: #374151 !important;
+}
+
+body.dark-mode .intro-title {
+  color: #f3f4f6 !important;
+}
+
+body.dark-mode .intro-text {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .section-card {
+  background: #1f2937 !important; /* Gris foncé au lieu du blanc/orange pâle */
+  border-color: #f5a623 !important; /* On garde la bordure orange */
+}
+
+body.dark-mode .section-title {
+  color: #f5a623 !important; /* Toujours orange */
+}
+
+body.dark-mode .field-label {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .input-field {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+  color: white !important;
+}
+body.dark-mode .input-field:focus {
+  border-color: #60a5fa !important;
+}
+
+body.dark-mode .error-box {
+  background: #450a0a !important;
+  border-color: #7f1d1d !important;
+  color: #fca5a5 !important;
+}
+
+body.dark-mode .btn-back {
+  background: #1f2937 !important;
+  border-color: #4b5563 !important;
+  color: white !important;
+}
+body.dark-mode .btn-back:hover {
+  background: #374151 !important;
+}
+
+body.dark-mode .btn-confirm {
+  background: #1e3a8a !important;
+}
+body.dark-mode .btn-confirm:hover {
+  background: #2563eb !important;
+}

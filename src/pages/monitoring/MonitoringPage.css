@@ -1,46 +1,69 @@
 @import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=DM+Sans:wght@300;400;500;700&display=swap");
 
+/* =========================================
+         VARIABLES & GLOBAL BASE
+========================================= */
+:root {
+  --bg-beige: #e9e6df;
+  --blue-dark: #163b67;
+  --yellow-accent: #f5a623;
+  --yellow-hover: #e49b18;
+  --text-brown: #6d6258;
+  --white: #ffffff;
+}
+
 .mon-page {
   min-height: 100vh;
   background: #f7f5f0;
   color: #1c1a15;
   font-family: "DM Sans", Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 
-.mon-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+/* =========================================
+         HEADER CONFIGURATIONS
+========================================= */
+.home-header {
+  height: 80px;
+  background: var(--blue-dark);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  background: #1a3a5c;
-  padding: 14px 20px;
+  padding: 0 60px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(22, 59, 103, 0.15);
 }
 
-.mon-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #fff;
-  font-family: "Syne", Arial, sans-serif;
-  font-size: 1.2rem;
-  font-weight: 800;
+.home-logo { 
+  display: flex; 
+  align-items: center; 
+  gap: 14px; 
 }
 
-.mon-logo-icon {
-  display: grid;
-  width: 32px;
-  height: 32px;
-  place-items: center;
-  border-radius: 7px;
-  background: #f5a623;
-  color: #1a3a5c;
+.home-logo-icon {
+  width: 42px; 
+  height: 42px;
+  background: linear-gradient(135deg, var(--yellow-accent), #ffc658);
+  border-radius: 14px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(245, 166, 35, 0.4);
 }
 
-.sun-c {
-  color: #f5a623;
+.home-logo h1 { 
+  color: white; 
+  font-size: 26px; 
+  font-weight: 900; 
+  letter-spacing: -0.5px; 
+  margin: 0; 
+}
+
+.home-logo-accent { 
+  color: var(--yellow-accent); 
 }
 
 .mon-badge-header {
@@ -76,10 +99,18 @@
   color: #1a3a5c;
 }
 
+/* =========================================
+         LAYOUT BODY & APP WRAPPERS
+========================================= */
 .mon-body {
   padding: 16px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
+/* Notifications SYSTEM */
 .notif-container {
   display: flex;
   flex-direction: column;
@@ -130,50 +161,11 @@
   opacity: 1;
 }
 
-.scenario-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.scenario-label {
-  color: #6b6558;
-  font-size: 11px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.sc-btn,
-.tab-btn {
-  border: 1px solid #e0ddd5;
-  border-radius: 20px;
-  background: #fff;
-  color: #6b6558;
-  cursor: pointer;
-  font-family: "DM Sans", Arial, sans-serif;
-  font-size: 12px;
-  padding: 7px 14px;
-  transition: 0.2s ease;
-}
-
-.sc-btn:hover,
-.tab-btn:hover {
-  border-color: #1a3a5c;
-  color: #1a3a5c;
-}
-
-.sc-btn.active {
-  border-color: #1a3a5c;
-  background: #1a3a5c;
-  color: #fff;
-}
-
+/* GRIDS & CONTAINERS */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
   margin-bottom: 14px;
 }
 
@@ -183,10 +175,14 @@
   border: 1px solid #e0ddd5;
   border-radius: 10px;
   background: #fff;
+  box-sizing: border-box;
 }
 
 .kpi-card {
   padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .kpi-label {
@@ -219,6 +215,7 @@
   font-size: 11px;
 }
 
+/* PROGRESS BAR */
 .bar-wrap {
   height: 6px;
   overflow: hidden;
@@ -233,6 +230,7 @@
   transition: width 0.5s ease;
 }
 
+/* SYSTEM METRICS GRID */
 .sys-info {
   margin-bottom: 14px;
   padding: 14px;
@@ -255,7 +253,7 @@
 
 .sys-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 12px;
 }
 
@@ -276,8 +274,14 @@
   font-size: 11px;
 }
 
+/* =========================================
+         CHARTS ENGINE STYLING
+========================================= */
 .chart-card {
-  padding: 14px;
+  padding: 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .chart-full {
@@ -286,8 +290,8 @@
 
 .charts-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 14px;
   margin-bottom: 14px;
 }
 
@@ -303,9 +307,20 @@
 }
 
 .tab-btn {
+  border: 1px solid #e0ddd5;
+  border-radius: 20px;
   background: #f7f5f0;
+  color: #6b6558;
+  cursor: pointer;
+  font-family: "DM Sans", Arial, sans-serif;
   font-size: 11px;
   padding: 5px 12px;
+  transition: 0.2s ease;
+}
+
+.tab-btn:hover {
+  border-color: #1a3a5c;
+  color: #1a3a5c;
 }
 
 .tab-btn.active {
@@ -316,7 +331,7 @@
 }
 
 .mon-chart-shell {
-  min-height: 250px;
+  min-height: 230px;
 }
 
 .mon-chart-shell svg {
@@ -342,6 +357,7 @@
   color: #6b6558;
   font-size: 12px;
   justify-content: center;
+  margin-top: 6px;
 }
 
 .chart-legend span {
@@ -357,29 +373,34 @@
   border-radius: 3px;
 }
 
+/* REFACTORED BAR CHART FIXS FOR OVERLAP DETECTOR */
 .bar-chart {
-  display: grid;
-  grid-template-columns: repeat(24, 1fr);
-  align-items: end;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
   gap: 4px;
   height: 160px;
   border-bottom: 1px solid #e0ddd5;
-  padding-top: 8px;
+  padding-top: 10px;
+  margin-bottom: 24px; /* Essential gap spacing protecting lower labels */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .bar-col {
   position: relative;
   display: flex;
-  min-width: 0;
-  height: 130px;
-  align-items: end;
+  flex: 1;
+  height: 100%;
+  align-items: flex-end;
   justify-content: center;
 }
 
 .bar-value {
-  width: 72%;
+  width: 80%;
   min-height: 4px;
   border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
 }
 
 .bar-value.negative {
@@ -388,46 +409,25 @@
 
 .bar-col span {
   position: absolute;
-  bottom: -21px;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
   color: #888;
   font-size: 10px;
+  white-space: nowrap;
 }
 
-.empty-monitoring {
-  display: grid;
-  place-items: center;
-  padding: 24px;
-}
-
-.empty-panel {
-  max-width: 430px;
-  border: 1px solid #e0ddd5;
-  border-radius: 12px;
-  background: #fff;
-  text-align: center;
-  padding: 28px;
-}
-
-.empty-panel svg {
-  color: #f5a623;
-}
-
-.empty-panel h1 {
-  color: #1a3a5c;
-  font-family: "Syne", Arial, sans-serif;
-  font-size: 24px;
-  margin: 12px 0;
-}
-
-.empty-panel p {
-  color: #6b6558;
-  margin-bottom: 18px;
-}
-
+/* =========================================
+         RESPONSIVE BREAKPOINTS
+========================================= */
 @media (max-width: 850px) {
-  .mon-header {
-    align-items: flex-start;
+  .home-header {
+    padding: 0 20px;
+    height: auto;
     flex-direction: column;
+    gap: 10px;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
 
   .mon-badge-header {
@@ -460,4 +460,114 @@
   .bar-chart {
     gap: 2px;
   }
+}
+
+/* =========================================
+         DARK MODE PRODUCTION RULES
+========================================= */
+body.dark-mode .mon-page {
+  background: #111827 !important;
+  color: #f3f4f6 !important;
+}
+
+body.dark-mode .home-header {
+  background: #0f2a4d !important;
+}
+
+body.dark-mode .mon-badge-header {
+  background: rgba(245, 166, 35, 0.2) !important;
+  border-color: rgba(245, 166, 35, 0.5) !important;
+  color: #f5a623 !important;
+}
+
+body.dark-mode .back-btn {
+  border-color: #f5a623 !important;
+  color: #f5a623 !important;
+}
+body.dark-mode .back-btn:hover {
+  background: #f5a623 !important;
+  color: #1a3a5c !important;
+}
+
+/* Notifications inside Dark Theme */
+body.dark-mode .notif {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+  color: #e5e7eb !important;
+}
+body.dark-mode .notif-critique {
+  background: #450a0a !important;
+  border-color: #7f1d1d !important;
+  color: #fca5a5 !important;
+}
+body.dark-mode .notif-important {
+  background: #451a03 !important;
+  border-color: #92400e !important;
+  color: #fcd34d !important;
+}
+body.dark-mode .notif-ok {
+  background: #064e3b !important;
+  border-color: #059669 !important;
+  color: #6ee7b7 !important;
+}
+
+/* Interactive Navigation Action Buttons */
+body.dark-mode .tab-btn {
+  background: #1f2937 !important;
+  border-color: #4b5563 !important;
+  color: #d1d5db !important;
+}
+body.dark-mode .tab-btn:hover {
+  border-color: #f5a623 !important;
+  color: white !important;
+}
+body.dark-mode .tab-btn.active {
+  background: #f5a623 !important;
+  border-color: #f5a623 !important;
+  color: #1a3a5c !important;
+}
+
+/* Dashboard Information Base Shells */
+body.dark-mode .kpi-card,
+body.dark-mode .sys-info,
+body.dark-mode .chart-card {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+  color: white !important;
+}
+
+body.dark-mode .kpi-label,
+body.dark-mode .sys-item-label,
+body.dark-mode .sys-item-sub {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .sys-item-val {
+  color: white !important;
+}
+
+body.dark-mode .sys-title,
+body.dark-mode .chart-title {
+  color: #f3f4f6 !important;
+}
+
+/* Chart Canvas Dark Overrides */
+body.dark-mode .bar-chart {
+  border-color: #374151 !important;
+}
+
+body.dark-mode .chart-grid {
+  stroke: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .chart-axis {
+  fill: #9ca3af !important;
+}
+
+body.dark-mode .chart-legend {
+  color: #d1d5db !important;
+}
+
+body.dark-mode .bar-wrap {
+  background: #374151 !important;
 }

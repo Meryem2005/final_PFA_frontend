@@ -1,14 +1,24 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, Send, BarChart3 } from "lucide-react";
+import { Sun, Send, BarChart3, User, Moon } from "lucide-react";
 import LocationMap from "../../components/LocationMap";
+import ProfilePopup from "../../components/ProfilePopup";
 import "leaflet/dist/leaflet.css";
 import "./AssistantPage.css";
+
+// --- MODIF ICI : Importer le useTheme ---
+import { useTheme } from "../../context/ThemeContext";
 
 export default function AssistantPage({ onReportReady }) {
   const navigate = useNavigate();
 
+  // --- MODIF ICI : Récupérer le thème global au lieu du useState local ---
+  const { isDarkMode, toggleTheme } = useTheme();
+
   const [showMap, setShowMap] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  // ... le reste de tes états (latitude, consommation, etc.) reste identique ...
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [localisation, setLocalisation] = useState("");
@@ -39,6 +49,7 @@ export default function AssistantPage({ onReportReady }) {
     setLocalisation(location.city);
   };
 
+  // ... (Tes fonctions sendQuestion, calculateSolar, downloadPdf restent identiques) ...
   const sendQuestion = async (text = question) => {
     if (!String(text).trim()) return;
     const currentQuestion = typeof text === "string" ? text : question;
@@ -87,13 +98,12 @@ export default function AssistantPage({ onReportReady }) {
       });
       const data = await response.json();
       setResults(data);
+      localStorage.setItem("lastCalcResult", JSON.stringify(data));
+      localStorage.setItem("lastCalcInput", JSON.stringify(payload));
       if (onReportReady) onReportReady(data, payload);
-      setMessages((prev) => [
-        ...prev,
-        {
-          type: "bot",
-          text: `📊 Calcul terminé — Voici une synthèse pour ${data.location || localisation}
 
+      // Formatage du message (identique à ton code)
+      const resultMsg = `📊 Calcul terminé — Voici une synthèse pour ${data.location || localisation}
 ━━━━━━━━━━━━━━━━━━
  PANNEAUX SOLAIRES
 ━━━━━━━━━━━━━━━━━━
@@ -101,29 +111,31 @@ export default function AssistantPage({ onReportReady }) {
 - Type : ${data?.panels?.panel_model || "-"}
 - Puissance : ${data?.panels?.total_power_kwp || 0} kWp
 - Production : ${data?.panels?.estimated_daily_production_kwh || 0} kWh/j
-
 ━━━━━━━━━━━━━━━━━━
  BATTERIES
 ━━━━━━━━━━━━━━━━━━
 - Nombre : ${data?.battery?.battery_count || 0}
 - Type : ${data?.battery?.battery_type || "-"}
 - Capacité : ${data?.battery?.required_capacity_kwh || 0} kWh
-
 ━━━━━━━━━━━━━━━━━━
 ⚡ ONDULEUR
 ━━━━━━━━━━━━━━━━━━
 - Modèle : ${data?.inverter?.inverter_model || "-"}
 - Puissance : ${data?.inverter?.recommended_power_kw || 0} kW
-
 ━━━━━━━━━━━━━━━━━━
  ROI
 ━━━━━━━━━━━━━━━━━━
 - Retour sur investissement : ${data?.roi?.roi_years || 0} ans
-
 ━━━━━━━━━━━━━━━━━━
  BUDGET FINAL
 ━━━━━━━━━━━━━━━━━━
-${data?.cost?.total_cost || 0} DH`,
+ ${data?.cost?.total_cost || 0} DH`;
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          type: "bot",
+          text: resultMsg,
           showGeneratePdf: true,
         },
       ]);
@@ -168,32 +180,49 @@ ${data?.cost?.total_cost || 0} DH`,
 
   return (
     <div className="assistant-page">
-
       {/* HEADER */}
       <header className="assistant-header">
         <div className="assistant-logo">
           <div className="assistant-logo-icon">
-            <Sun size={20} color="white" />
+            <Sun size={22} color="white" />
           </div>
-          <h1>Solar<span className="assistant-logo-accent"> AI</span></h1>
+          <h1>
+            Solar<span className="assistant-logo-accent">AI</span>
+          </h1>
         </div>
-        <button
-          className="assistant-monitoring-btn"
-          onClick={() => navigate("/monitoring")}
-        >
-          Monitoring PV
-        </button>
+
+        <div className="assistant-actions">
+          <button
+            className="assistant-monitoring-btn"
+            onClick={() => navigate("/confirm")}
+          >
+            <BarChart3 size={18} />
+            Monitoring PV
+          </button>
+
+          {/* BOUTON UTILISATEUR + COMPOSANT POPUP */}
+          <div className="assistant-profile-wrapper">
+            <button
+              className="assistant-icon-btn"
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+            >
+              <User size={20} />
+            </button>
+
+            <ProfilePopup
+              showMenu={showProfileMenu}
+              onClose={() => setShowProfileMenu(false)}
+              onNavigate={navigate}
+            />
+          </div>
+        </div>
       </header>
 
-      {/* MAIN */}
+      {/* MAIN (Le reste du JSX reste identique) */}
       <div className="assistant-main">
-
-        {/* LEFT */}
         <aside className="assistant-sidebar-left">
           <h2 className="assistant-sidebar-title">PARAMÈTRES</h2>
           <div className="assistant-form">
-
-            {/* LOCALISATION */}
             <div className="assistant-field">
               <label>Localisation</label>
               <div
@@ -204,23 +233,35 @@ ${data?.cost?.total_cost || 0} DH`,
                   onLocationSelect={handleLocationSelect}
                   small={true}
                 />
-                {/* overlay qui bloque les clics sur la small map */}
-                <div style={{
-                  position: "absolute",
-                  inset: 0,
-                  zIndex: 999,
-                  background: "transparent",
-                }} />
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    zIndex: 999,
+                    background: "transparent",
+                  }}
+                />
               </div>
               {localisation && (
-                <div style={{ fontSize: "13px", color: "#374151", marginTop: "6px" }}>
-                  <p><strong>Ville :</strong> {localisation}</p>
-                  <p><strong>Lat :</strong> {latitude?.toFixed(4)}</p>
-                  <p><strong>Lng :</strong> {longitude?.toFixed(4)}</p>
+                <div
+                  style={{
+                    fontSize: "13px",
+                    color: "#374151",
+                    marginTop: "6px",
+                  }}
+                >
+                  <p>
+                    <strong>Ville :</strong> {localisation}
+                  </p>
+                  <p>
+                    <strong>Lat :</strong> {latitude?.toFixed(4)}
+                  </p>
+                  <p>
+                    <strong>Lng :</strong> {longitude?.toFixed(4)}
+                  </p>
                 </div>
               )}
             </div>
-
             <div className="assistant-field">
               <label>Consommation journalière (kWh)</label>
               <input
@@ -229,7 +270,6 @@ ${data?.cost?.total_cost || 0} DH`,
                 onChange={(e) => setConsommation(e.target.value)}
               />
             </div>
-
             <div className="assistant-field">
               <label>Surface disponible (m²)</label>
               <input
@@ -238,7 +278,6 @@ ${data?.cost?.total_cost || 0} DH`,
                 onChange={(e) => setSurface(e.target.value)}
               />
             </div>
-
             <div className="assistant-field">
               <label>Budget disponible (DH)</label>
               <input
@@ -247,7 +286,6 @@ ${data?.cost?.total_cost || 0} DH`,
                 onChange={(e) => setBudget(e.target.value)}
               />
             </div>
-
             <div className="assistant-field">
               <label>Orientation</label>
               <select
@@ -260,7 +298,6 @@ ${data?.cost?.total_cost || 0} DH`,
                 <option>Ouest</option>
               </select>
             </div>
-
             <div className="assistant-field">
               <label>Type d'installation</label>
               <select
@@ -272,7 +309,6 @@ ${data?.cost?.total_cost || 0} DH`,
                 <option value="off-grid">Off-Grid</option>
               </select>
             </div>
-
             <button
               className="assistant-calculate-btn"
               onClick={calculateSolar}
@@ -283,7 +319,6 @@ ${data?.cost?.total_cost || 0} DH`,
           </div>
         </aside>
 
-        {/* CENTER */}
         <main className="assistant-center">
           {messages.length === 1 ? (
             <div className="assistant-welcome">
@@ -335,8 +370,6 @@ ${data?.cost?.total_cost || 0} DH`,
               </div>
             </div>
           )}
-
-          {/* INPUT */}
           <div className="assistant-input-bar">
             <div className="assistant-input-inner">
               <input
@@ -353,7 +386,6 @@ ${data?.cost?.total_cost || 0} DH`,
           </div>
         </main>
 
-        {/* RIGHT */}
         <aside className="assistant-sidebar-right">
           <h2 className="assistant-sidebar-title">RÉSULTATS</h2>
           {!results ? (
@@ -367,15 +399,23 @@ ${data?.cost?.total_cost || 0} DH`,
             <div className="assistant-results">
               <div className="assistant-result-card">
                 <h3>☀️ PANNEAUX</h3>
-                <p>{results?.panels?.panel_count} × {results?.panels?.panel_model}</p>
+                <p>
+                  {results?.panels?.panel_count} ×{" "}
+                  {results?.panels?.panel_model}
+                </p>
               </div>
               <div className="assistant-result-card">
                 <h3>🔋 BATTERIES</h3>
-                <p>{results?.battery?.battery_count} × {results?.battery?.battery_type}</p>
+                <p>
+                  {results?.battery?.battery_count} ×{" "}
+                  {results?.battery?.battery_type}
+                </p>
               </div>
               <div className="assistant-result-card">
                 <h3>💰 BUDGET FINAL</h3>
-                <p className="assistant-result-big">{results?.cost?.total_cost} DH</p>
+                <p className="assistant-result-big">
+                  {results?.cost?.total_cost} DH
+                </p>
               </div>
               {results?.installation && (
                 <div className="assistant-result-card">
@@ -387,7 +427,9 @@ ${data?.cost?.total_cost || 0} DH`,
               {results?.roi && (
                 <div className="assistant-result-card">
                   <h3>📈 ROI</h3>
-                  <p className="assistant-result-roi">{results.roi.roi_years} ans</p>
+                  <p className="assistant-result-roi">
+                    {results.roi.roi_years} ans
+                  </p>
                 </div>
               )}
               {results?.recommendations?.length > 0 && (
@@ -406,46 +448,76 @@ ${data?.cost?.total_cost || 0} DH`,
       </div>
 
       {/* MODAL CARTE PLEIN ÉCRAN */}
+      {/* MODAL CARTE PLEIN ÉCRAN */}
       {showMap && (
-        <div style={{
-          position: "fixed", inset: 0,
-          background: "rgba(0,0,0,0.5)",
-          zIndex: 1000,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}>
-          <div style={{
-            background: "white",
-            width: "95%",
-            height: "90%",
-            borderRadius: "16px",
-            overflow: "hidden",
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            zIndex: 1000,
             display: "flex",
-            flexDirection: "column",
-          }}>
-            <div style={{
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {/* LE CADRE (LA BOITE BLANCHE) -> Devient gris foncé en mode sombre */}
+          <div
+            style={{
+              background: isDarkMode ? "#1f2937" : "white",
+              width: "95%",
+              height: "90%",
+              borderRadius: "16px",
+              overflow: "hidden",
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "16px 20px",
-              borderBottom: "1px solid #e5e7eb",
-            }}>
-              <h2 style={{ fontWeight: 700, fontSize: "18px", color: "#163b67" }}>
+              flexDirection: "column",
+              border: isDarkMode ? "1px solid #374151" : "none", // Bordure subtile en mode sombre
+            }}
+          >
+            {/* HEADER DE LA MODALE (Titre + Boutons) */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "16px 20px",
+                borderBottom: `1px solid ${isDarkMode ? "#374151" : "#e5e7eb"}`,
+                background: isDarkMode ? "#1f2937" : "white",
+              }}
+            >
+              {/* TITRE */}
+              <h2
+                style={{
+                  fontWeight: 700,
+                  fontSize: "18px",
+                  margin: 0,
+                  color: isDarkMode ? "white" : "#163b67",
+                }}
+              >
                 Choisir une localisation
               </h2>
+
               <div style={{ display: "flex", gap: "12px" }}>
+                {/* BOUTON ANNULER */}
                 <button
                   onClick={() => setShowMap(false)}
                   style={{
                     padding: "8px 16px",
-                    border: "1px solid #e5e7eb",
+                    border: isDarkMode
+                      ? "1px solid #4b5563"
+                      : "1px solid #e5e7eb",
                     borderRadius: "8px",
                     cursor: "pointer",
+                    color: isDarkMode ? "white" : "#163b67",
+                    background: "transparent",
+                    fontWeight: 600,
+                    fontSize: "14px",
                   }}
                 >
                   Annuler
                 </button>
+
+                {/* BOUTON CONFIRMER */}
                 <button
                   onClick={() => setShowMap(false)}
                   style={{
@@ -456,19 +528,27 @@ ${data?.cost?.total_cost || 0} DH`,
                     borderRadius: "8px",
                     fontWeight: 700,
                     cursor: "pointer",
+                    fontSize: "14px",
                   }}
                 >
                   Confirmer
                 </button>
               </div>
             </div>
-            <div style={{ flex: 1, overflow: "hidden" }}>
+
+            {/* LA CARTE */}
+            <div
+              style={{
+                flex: 1,
+                overflow: "hidden",
+                background: isDarkMode ? "#111827" : "white",
+              }}
+            >
               <LocationMap onLocationSelect={handleLocationSelect} />
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }

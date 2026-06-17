@@ -2,15 +2,18 @@ import { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext"; // Import du ThemeProvider
 
 import HomePage from "./pages/home/HomePage";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import AssistantPage from "./pages/assistant/AssistantPage";
 import MonitoringPage from "./pages/monitoring/MonitoringPage";
+import ConfirmPage from "./pages/confirm/ConfirmPage";
+import SettingsPage from "./pages/settings/SettingsPage"; // Import de la page Settings
 
 /* =========================
-   PROTECTED ROUTE
+   PROTECTED ROUTE (Définition obligatoire)
 ========================= */
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth();
@@ -37,7 +40,6 @@ function AppRoutes() {
       <Route path="/" element={<HomePage />} />
 
       {/* LOGIN */}
-      {/* LOGIN */}
       <Route path="/login" element={<LoginPage />} />
 
       {/* REGISTER */}
@@ -58,6 +60,16 @@ function AppRoutes() {
         }
       />
 
+      {/* CONFIRM (protégé) */}
+      <Route
+        path="/confirm"
+        element={
+          <ProtectedRoute>
+            <ConfirmPage />
+          </ProtectedRoute>
+        }
+      />
+
       {/* MONITORING (protégé) */}
       <Route
         path="/monitoring"
@@ -68,6 +80,16 @@ function AppRoutes() {
               inputData={inputData}
               onBack={() => window.history.back()}
             />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* SETTINGS (protégé) -> AJOUTÉ ICI À L'INTÉRIEUR DE <Routes> */}
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <SettingsPage />
           </ProtectedRoute>
         }
       />
@@ -85,7 +107,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        {/* On enveloppe AppRoutes avec ThemeProvider pour le mode sombre global */}
+        <ThemeProvider>
+          <AppRoutes />
+        </ThemeProvider>
       </AuthProvider>
     </BrowserRouter>
   );

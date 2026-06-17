@@ -2,16 +2,159 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================
+   BASE & RESET
+========================= */
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
+  /* Transition douce pour le changement de thème global */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+/* Styles par défaut (Mode Clair) */
 select {
   background-color: white;
   color: #163b67;
+  border: 1px solid #d1d5db;
 }
 
 option {
   background: white;
   color: #163b67;
 }
+
+/* =========================
+   DARK MODE GLOBAL
+========================= */
+
+/* Fond de base de toute l'application */
+body.dark-mode {
+  background-color: #111827 !important;
+  color: #f3f4f6 !important;
+}
+
+/* 1. TYPOGRAPHIE (Tous les titres et textes) */
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, 
+body.dark-mode h4, body.dark-mode h5, body.dark-mode h6, 
+body.dark-mode p, body.dark-mode span, body.dark-mode label {
+  color: #e5e7eb !important;
+}
+
+body.dark-mode a {
+  color: #60a5fa !important; /* Bleu clair pour les liens */
+  text-decoration: none;
+}
+
+body.dark-mode small {
+  color: #9ca3af !important;
+}
+
+/* 2. FORMULAIRES (Inputs, Selects, Textareas) */
+/* Force la couleur sombre pour tous les champs des pages Login, Register, Home */
+body.dark-mode input, 
+body.dark-mode select, 
+body.dark-mode textarea {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+  color: white !important;
+}
+
+/* Placeholder (texte indicatif) */
+body.dark-mode input::placeholder, 
+body.dark-mode textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+/* 3. BOUTONS (Générique) */
+/* Cible les boutons qui ne sont pas stylisés spécifiquement ailleurs */
+body.dark-mode button {
+  color: white;
+}
+
+/* 4. COMPOSANTS GÉNÉRIQUES (Pour Home, Auth, Monitoring) */
+/* Cible les "cartes" blanches ou boîtes de contenu */
+body.dark-mode .card, 
+body.dark-mode .box, 
+body.dark-mode .container-box,
+body.dark-mode .feature-card,
+body.dark-mode .stat-card,
+body.dark-mode .dashboard-item,
+/* Cible les conteneurs d'authentification fréquents */
+body.dark-mode .auth-container, 
+body.dark-mode .login-wrapper, 
+body.dark-mode .register-wrapper {
+  background-color: #1f2937 !important; /* Gris foncé au lieu de blanc */
+  border-color: #374151 !important;    /* Bordure grise */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Section Hero (Grande bannière d'accueil) */
+body.dark-mode .hero, 
+body.dark-mode .hero-section {
+  background-color: #111827 !important;
+}
+
+/* Tableaux (si présents dans Monitoring) */
+body.dark-mode table, 
+body.dark-mode th, 
+body.dark-mode td {
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+  border-color: #374151 !important;
+}
+
+/* =========================
+   DARK MODE : PAGE ASSISTANT
+   (Tes styles spécifiques)
+========================= */
+
+/* Barre de chat */
+body.dark-mode .assistant-input-bar {
+  background-color: #1f2937;
+  border-top: 1px solid #374151;
+}
+
+body.dark-mode .assistant-input-inner {
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+body.dark-mode .assistant-input-inner input {
+  background-color: transparent !important;
+  color: white !important;
+}
+
+body.dark-mode .assistant-input-inner input::placeholder {
+  color: #9ca3af;
+}
+
+/* Sidebars */
+body.dark-mode .assistant-sidebar-left {
+  background: #1f2937;
+  border-right: 1px solid #374151;
+}
+
+body.dark-mode .assistant-sidebar-right {
+  background: #1f2937;
+  border-left: 1px solid #374151;
+}
+
+/* Cartes de résultats & Messages */
+body.dark-mode .assistant-result-card,
+body.dark-mode .assistant-msg-bot {
+  background: #374151;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+/* Menu Profil */
+body.dark-mode .assistant-profile-menu {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+}
+
+body.dark-mode .assistant-profile-header {
+  background-color: #374151;
+}
+

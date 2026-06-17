@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=DM+Sans:wght@300;400;500;700&display=swap");
+
 /* Variables basées sur tes couleurs */
 :root {
   --bg-beige: #e9e6df;
@@ -6,13 +8,6 @@
   --yellow-hover: #e49b18;
   --text-brown: #6d6258;
   --white: #ffffff;
-}
-
-.home-page {
-  min-height: 100vh;
-  background: var(--bg-beige);
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  overflow-x: hidden;
 }
 
 /* ================= HEADER ================= */
@@ -410,4 +405,133 @@
   .footer-col ul li a { display: inline-block; }
   .home-logo { justify-content: center; }
   .contact-form .home-primary-btn { align-self: stretch; justify-content: center; }
+}
+
+/* =========================================
+       DARK MODE (HOME PAGE - COMPLET)
+========================================= */
+
+/* Fond général de la page */
+body.dark-mode .home-page {
+  background: #111827 !important;
+}
+
+/* Header */
+body.dark-mode .home-header {
+  background: #0f2a4d !important; /* Bleu plus foncé */
+}
+
+/* Hero Section */
+body.dark-mode .home-hero-left h2 {
+  color: #f3f4f6 !important;
+}
+
+body.dark-mode .text-highlight {
+  color: #f3f4f6 !important;
+}
+
+body.dark-mode .text-highlight::after {
+  background: rgba(245, 166, 35, 0.4) !important;
+}
+
+body.dark-mode .home-hero-left p {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .home-secondary-btn {
+  background: #1f2937 !important;
+  color: white !important;
+  border-color: #374151 !important;
+}
+body.dark-mode .home-secondary-btn:hover {
+  background: #374151 !important;
+}
+
+/* Carousel */
+body.dark-mode .home-carousel-item-infinite {
+  border-color: #1f2937 !important;
+}
+
+/* Features */
+body.dark-mode .home-feature-card {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+}
+body.dark-mode .home-feature-card:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+}
+body.dark-mode .home-feature-card h3 {
+  color: white !important;
+}
+body.dark-mode .home-feature-card p {
+  color: #d1d5db !important;
+}
+
+/* Stats Section */
+body.dark-mode .home-stats-section {
+  background: #0f2a4d !important; /* Bleu foncé */
+}
+body.dark-mode .stats-overlay {
+  background: rgba(15, 42, 77, 0.7) !important; /* Assombrir la vidéo */
+}
+
+/* Contact Section (CORRECTION ICI) */
+body.dark-mode .home-contact {
+  background-color: #111827 !important; /* Fond de section sombre */
+}
+
+body.dark-mode .contact-left h2 {
+  color: white !important;
+}
+body.dark-mode .contact-left > p {
+  color: #d1d5db !important;
+}
+
+body.dark-mode .contact-icon-box {
+  background: rgba(96, 165, 250, 0.2) !important;
+  color: #60a5fa !important;
+}
+body.dark-mode .contact-info-item h4 {
+  color: #f3f4f6 !important;
+}
+body.dark-mode .contact-info-item p {
+  color: #9ca3af !important;
+}
+
+/* Formulaire Contact (Carte blanche) */
+body.dark-mode .contact-right {
+  background-color: #1f2937 !important; /* Gris foncé */
+  border-color: #374151 !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+}
+
+body.dark-mode .form-input,
+body.dark-mode .form-textarea {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+  color: white !important;
+}
+body.dark-mode .form-input:focus,
+body.dark-mode .form-textarea:focus {
+  background-color: #374151 !important;
+  border-color: #f5a623 !important;
+}
+
+body.dark-mode .form-input::placeholder,
+body.dark-mode .form-textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+/* Footer */
+body.dark-mode .home-footer {
+  background: #0f2a4d !important;
+}
+body.dark-mode .footer-col h3 {
+  color: white !important;
+}
+body.dark-mode .footer-col ul li a {
+  color: rgba(255,255,255,0.7) !important;
+}
+body.dark-mode .footer-col ul li a:hover {
+  color: #f5a623 !important;
 }

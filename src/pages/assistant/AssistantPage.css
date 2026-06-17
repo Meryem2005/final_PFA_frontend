@@ -6,7 +6,7 @@
   flex-direction: column;
 }
 
-/* HEADER */
+/* ================= HEADER IDENTIQUE À LA HOME ================= */
 .assistant-header {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -16,60 +16,99 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 60px; /* Marge de 60px comme la HomePage */
   border-bottom: 1px solid #0e2744;
+  box-shadow: 0 4px 20px rgba(22, 59, 103, 0.15); /* Ombre comme la HomePage */
 }
 
-.assistant-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* ================= LOGO ASSISTANT ================= */
+.assistant-logo { 
+  display: flex; 
+  align-items: center; 
+  gap: 14px; 
 }
 
 .assistant-logo-icon {
-  width: 40px;
-  height: 40px;
-  background: #f5a623;
-  border-radius: 8px;
+  width: 42px; 
+  height: 42px;
+  background: linear-gradient(135deg, var(--yellow-accent), #ffc658);
+  border-radius: 14px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(245, 166, 35, 0.4);
+}
+
+.assistant-logo h1 { 
+  color: white; 
+  font-size: 26px; 
+  font-weight: 900; 
+  letter-spacing: -0.5px; 
+  margin: 0; 
+}
+
+.assistant-logo-accent { 
+  color: var(--yellow-accent); 
+}
+
+/* ================= BOUTONS DROITE (ACTIONS) ================= */
+.assistant-actions {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 16px; /* Même espacement que la HomePage */
 }
 
-.assistant-logo h1 {
-  font-size: 28px;
-  font-weight: 900;
-  color: white;
-}
-
-.assistant-logo-accent {
-  color: #f5a623;
-}
-
+/* Style du bouton Monitoring PV */
 .assistant-monitoring-btn {
-  padding: 12px 20px;
-  border-radius: 999px;
-  border: 1px solid #f5a623;
-  color: #f5a623;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
   background: transparent;
+  color: var(--yellow-accent);
+  border: 2px solid var(--yellow-accent);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
 }
 
 .assistant-monitoring-btn:hover {
-  background: #f5a623;
-  color: white;
+  background: var(--yellow-accent);
+  color: #163b67;
 }
 
-/* MAIN */
+/* Style des boutons icônes (User et Mode Sombre/Clair) */
+.assistant-icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%; /* Rond */
+  background: rgba(255, 255, 255, 0.1); /* Fond blanc transparent */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.assistant-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: var(--yellow-accent);
+  color: var(--yellow-accent);
+  transform: translateY(-2px); /* Léger effet de levée au survol */
+}
+
+/* ================= MAIN ================= */
 .assistant-main {
   padding-top: 80px;
   display: flex;
   height: 100vh;
 }
 
-/* SIDEBAR LEFT */
+/* ================= SIDEBAR LEFT ================= */
 .assistant-sidebar-left {
   width: 340px;
   background: white;
@@ -130,7 +169,7 @@
 .assistant-calculate-btn:hover { background: #e89914; }
 .assistant-calculate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* CENTER */
+/* ================= CENTER ================= */
 .assistant-center {
   flex: 1;
   display: flex;
@@ -243,7 +282,7 @@
   text-decoration: underline;
 }
 
-/* INPUT */
+/* ================= INPUT ================= */
 .assistant-input-bar {
   border-top: 1px solid #d1d5db;
   background: #ece8e1;
@@ -282,7 +321,7 @@
 
 .assistant-input-inner button:hover { background: #e89914; }
 
-/* SIDEBAR RIGHT */
+/* ================= SIDEBAR RIGHT ================= */
 .assistant-sidebar-right {
   width: 300px;
   background: white;
@@ -353,4 +392,310 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+/* ================= MENU POP-UP PROFIL ================= */
+.assistant-profile-wrapper {
+  position: relative; /* Permet de positionner le menu par rapport à l'icône */
+}
+
+.assistant-profile-menu {
+  position: absolute;
+  top: 55px; /* Apparaît sous l'icône */
+  right: 0;
+  width: 260px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  z-index: 200;
+  animation: profileFadeIn 0.2s ease-out;
+}
+
+@keyframes profileFadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.assistant-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 16px;
+  background: #f7f4ef;
+}
+
+.assistant-profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #163b67;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+  border: 2px solid var(--yellow-accent);
+}
+
+.assistant-profile-info h4 {
+  margin: 0;
+  font-size: 15px;
+  color: #163b67;
+  font-weight: 700;
+}
+
+.assistant-profile-info p {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.assistant-profile-divider {
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.assistant-profile-links {
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.assistant-profile-links button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 12px 20px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.assistant-profile-links button:hover {
+  background: #f7f4ef;
+  color: #f5a623;
+}
+
+.assistant-logout-btn {
+  color: #ef4444 !important;
+}
+
+.assistant-logout-btn:hover {
+  background: #fef2f2 !important;
+}
+
+/* ================= GESTION IMAGE PROFIL ================= */
+.assistant-profile-pic-wrapper {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+}
+
+.assistant-profile-pic-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--yellow-accent);
+}
+
+.assistant-camera-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  background: #163b67;
+  border: 2px solid white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Masquer l'icône utilisateur par défaut s'il y a une image */
+.assistant-profile-pic {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #163b67;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border: 2px solid var(--yellow-accent);
+}
+
+/* =========================================
+       DARK MODE (Ajouter à la fin du fichier)
+========================================= */
+
+/* Fond principal de la page */
+body.dark-mode .assistant-page {
+  background: #111827; /* Gris très foncé */
+}
+
+/* Header (On garde le bleu foncé ou on assombrit légèrement) */
+body.dark-mode .assistant-header {
+  background: #0f2a4d; /* Bleu encore plus foncé */
+  border-bottom: 1px solid #1e3a8a;
+}
+
+/* Sidebar Gauche */
+body.dark-mode .assistant-sidebar-left {
+  background: #1f2937; /* Gris foncé */
+  border-right: 1px solid #374151;
+}
+
+body.dark-mode .assistant-sidebar-title {
+  color: #e5e7eb; /* Texte blanc cassé */
+}
+
+body.dark-mode .assistant-field label {
+  color: #d1d5db;
+}
+
+body.dark-mode .assistant-field input,
+body.dark-mode .assistant-field select {
+  background: #374151; /* Fond des inputs gris */
+  color: white;
+  border-color: #4b5563;
+}
+
+/* Bouton Calculer (Garder la couleur orange ou l'assombrir légèrement) */
+body.dark-mode .assistant-calculate-btn:hover { 
+  filter: brightness(0.9); 
+}
+
+/* Centre (Zone de chat) */
+body.dark-mode .assistant-welcome-icon {
+  background: #374151;
+  color: #fbbf24; /* Jaune plus vif */
+}
+
+body.dark-mode .assistant-welcome h1 {
+  color: #f3f4f6;
+}
+
+body.dark-mode .assistant-welcome p {
+  color: #9ca3af;
+}
+
+body.dark-mode .assistant-suggestions button {
+  background: #374151;
+  border-color: #4b5563;
+  color: #d1d5db;
+}
+
+body.dark-mode .assistant-suggestions button:hover {
+  background: #fbbf24; /* Jaune au survol */
+  color: #000;
+}
+
+/* Messages du Bot et User */
+body.dark-mode .assistant-msg-bot {
+  background: #374151; /* Fond gris pour messages bot */
+  color: #e5e7eb;
+}
+
+body.dark-mode .assistant-msg-user {
+  /* Le message utilisateur reste bleu foncé, ça passe bien */
+  background: #1e3a8a; 
+  color: white;
+}
+
+/* Barre de saisie (en bas) */
+body.dark-mode .assistant-input-bar {
+  background: #1f2937;
+  border-top: 1px solid #374151;
+}
+
+body.dark-mode .assistant-input-inner {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+body.dark-mode .assistant-input-inner input {
+  color: white;
+}
+
+/* Sidebar Droite (Résultats) */
+body.dark-mode .assistant-sidebar-right {
+  background: #1f2937;
+  border-left: 1px solid #374151;
+}
+
+body.dark-mode .assistant-no-results-icon {
+  background: #374151;
+  color: #fbbf24;
+}
+
+body.dark-mode .assistant-no-results p {
+  color: #9ca3af;
+}
+
+body.dark-mode .assistant-result-card {
+  background: #374151;
+  border-color: #4b5563;
+  color: #e5e7eb;
+}
+
+body.dark-mode .assistant-result-big {
+  color: #fbbf24; /* Chiffres budget en jaune */
+}
+
+/* Menu Profil Popup */
+body.dark-mode .assistant-profile-menu {
+  background: #1f2937;
+  border: 1px solid #374151;
+}
+
+body.dark-mode .assistant-profile-header {
+  background: #374151;
+}
+
+body.dark-mode .assistant-profile-info h4 {
+  color: #f3f4f6;
+}
+
+body.dark-mode .assistant-profile-links button {
+  color: #d1d5db;
+}
+
+body.dark-mode .assistant-profile-links button:hover {
+  background: #374151;
+  color: #fbbf24;
+}
+
+body.dark-mode .assistant-logout-btn:hover {
+  background: #450a0a !important; /* Rouge très foncé */
+  color: #fca5a5 !important;
+}
+
+/* =========================================
+       DARK MODE : CORRECTION MAP LEAFLET
+========================================= */
+
+/* Barre des contrôles (+ et -) */
+body.dark-mode .leaflet-bar {
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Boutons + et - individuels */
+body.dark-mode .leaflet-bar a {
+  background-color: #1f2937 !important; /* Gris foncé */
+  color: white !important;               /* Texte blanc */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Boutons au survol */
+body.dark-mode .leaflet-bar a:hover {
+  background-color: #374151 !important;
 }

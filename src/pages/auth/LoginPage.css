@@ -188,3 +188,86 @@
   font-size: 12px;
   color: #6d6258;
 }
+/* ========================
+   DARK MODE (Login/Register)
+======================== */
+body.dark-mode .auth-page {
+  background: #111827 !important;
+}
+
+body.dark-mode .auth-card {
+  background: #1f2937 !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5) !important;
+}
+
+body.dark-mode .auth-logo h1 {
+  color: white !important;
+}
+
+body.dark-mode .auth-title {
+  color: #f3f4f6 !important;
+}
+
+body.dark-mode .auth-subtitle {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .auth-error {
+  background: #450a0a !important;
+  border-color: #7f1d1d !important;
+  color: #fca5a5 !important;
+}
+
+body.dark-mode .auth-field label {
+  color: #d1d5db !important;
+}
+
+body.dark-mode .auth-field input,
+body.dark-mode .auth-field select {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+  color: white !important;
+}
+
+body.dark-mode .auth-field input:focus {
+  border-color: #60a5fa !important; /* Bleu plus visible en mode sombre */
+}
+
+body.dark-mode .auth-btn {
+  background: #1e3a8a !important; /* Bleu foncé */
+}
+body.dark-mode .auth-btn:hover {
+  background: #f5a623 !important;
+  color: #000 !important;
+}
+
+body.dark-mode .auth-link {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .auth-link a {
+  color: #60a5fa !important;
+}
+body.dark-mode .auth-link a:hover {
+  color: #f5a623 !important;
+}
+
+/* Boutons de sélection de niveau */
+body.dark-mode .auth-level-btn {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+}
+body.dark-mode .auth-level-btn:hover {
+  background: #374151 !important;
+  border-color: #60a5fa !important;
+}
+body.dark-mode .auth-level-btn.active {
+  background: #1e3a8a !important;
+  border-color: #60a5fa !important;
+}
+body.dark-mode .auth-level-label {
+  color: #f3f4f6 !important;
+}
+body.dark-mode .auth-level-desc {
+  color: #9ca3af !important;
+}
